@@ -19,17 +19,15 @@ class _HomePageState extends State<HomePage> {
   void signout(BuildContext context) async {
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      await authService.signout(); // Sign out using AuthService
+      await authService.signout();
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-                Authgate(), // Ensure the correct spelling of AuthGate
+            builder: (context) => const Authgate(),
           ),
         );
       }
     } catch (e) {
-      // Handle any errors that occur during sign-out
       print('Error during signout: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error signing out. Please try again.')),
@@ -41,13 +39,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home page"),
+        title: const Text("Chats"),
         actions: [
           IconButton(
             onPressed: () => signout(context),
             icon: const Icon(Icons.logout),
           ),
         ],
+        backgroundColor: Colors.green[700],
       ),
       body: _buildUserList(),
     );
@@ -55,29 +54,38 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildUserList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .snapshots(), // Ensure 'users' collection exists in Firestore
+      stream: FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Text('Error');
+          return const Center(child: Text('Error loading users.'));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Loading...');
+          return const Center(child: CircularProgressIndicator());
         }
-        return ListView(
-          children: snapshot.data!.docs
-              .map<Widget>((doc) => _buildUserListItem(doc))
-              .toList(),
+        final users = snapshot.data?.docs ?? [];
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return _buildUserListItem(user);
+          },
         );
       },
     );
   }
 
   Widget _buildUserListItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-    if (_auth.currentUser!.email != data['email']) {
+    final data = document.data() as Map<String, dynamic>;
+    final currentUserEmail = _auth.currentUser?.email;
+    if (currentUserEmail != null && currentUserEmail != data['email']) {
       return ListTile(
+        leading: CircleAvatar(
+          child: Text(
+            data['email'][0].toUpperCase(),
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.blueAccent,
+        ),
         title: Text(data['email']),
         onTap: () {
           Navigator.push(
