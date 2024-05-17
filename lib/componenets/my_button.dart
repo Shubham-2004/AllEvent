@@ -7,6 +7,8 @@ class MyButton extends StatelessWidget {
     super.key,
     required this.onTap,
     required this.text,
+    required MaterialAccentColor backgroundColor,
+    required Color textColor,
   });
 
   @override

@@ -78,4 +78,5 @@ flutter {
 
 dependencies {
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.razorpay:checkout:1.6.20'
 }
