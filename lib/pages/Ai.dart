@@ -27,7 +27,7 @@ class HistoricalEventSearchPage extends StatefulWidget {
 
 class _HistoricalEventSearchPageState extends State<HistoricalEventSearchPage> {
   final TextEditingController _textController = TextEditingController();
-  String _events = '';
+  List<Map<String, dynamic>> _events = [];
 
   Future<void> _searchEvents(String text) async {
     final url = Uri.parse(
@@ -46,11 +46,14 @@ class _HistoricalEventSearchPageState extends State<HistoricalEventSearchPage> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
-        _events = data.toString();
+        _events = List<Map<String, dynamic>>.from(data);
       });
     } else {
       setState(() {
-        _events = 'Error: ${response.statusCode}';
+        _events = [];
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.statusCode}')),
+        );
       });
     }
   }
@@ -90,19 +93,21 @@ class _HistoricalEventSearchPageState extends State<HistoricalEventSearchPage> {
               ),
               SizedBox(height: 20),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Result container background color
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Text(
-                      _events,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ),
+                child: _events.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: _events.length,
+                        itemBuilder: (context, index) {
+                          final event = _events[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text('${index + 1}'),
+                            ),
+                            title: Text(event['event']),
+                            subtitle: Text('Year: ${event['year']}'),
+                          );
+                        },
+                      )
+                    : Center(child: Text('No events found')),
               ),
             ],
           ),

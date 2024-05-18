@@ -1,6 +1,7 @@
-import 'package:chatapp/pages/Ai.dart';
-import 'package:chatapp/pages/Category.dart';
-import 'package:chatapp/pages/Wallet.dart';
+import 'package:allevent/pages/Ai.dart';
+import 'package:allevent/pages/Category.dart';
+import 'package:allevent/pages/Wallet.dart';
+import 'package:allevent/services/auth/loginorregister.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,7 @@ class _HomeState extends State<Home> {
   PageController _pageController = PageController(viewportFraction: 0.3);
   int _currentPage = 0;
   Timer? _timer;
+  bool isGridView = false; // State variable to track the view mode
 
   Future<void> apicall() async {
     try {
@@ -129,6 +131,14 @@ class _HomeState extends State<Home> {
         title: Text('AllEvents'),
         backgroundColor: Colors.blueAccent,
         actions: [
+          IconButton(
+            icon: Icon(isGridView ? Icons.view_list : Icons.grid_view),
+            onPressed: () {
+              setState(() {
+                isGridView = !isGridView;
+              });
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: CircleAvatar(
@@ -216,6 +226,16 @@ class _HomeState extends State<Home> {
                 );
               },
             ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginorRegister()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -252,19 +272,42 @@ class _HomeState extends State<Home> {
                   ),
                   SizedBox(height: 10),
                   categories.isNotEmpty
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            var category = categories[index];
-                            return CategoryItem(
-                              category: category,
-                              icon: categoryIcons[category['name']] ??
-                                  Icons.category, // Default icon if not found
-                            );
-                          },
-                        )
+                      ? isGridView
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 3,
+                              ),
+                              itemCount: categories.length,
+                              itemBuilder: (context, index) {
+                                var category = categories[index];
+                                return CategoryItem(
+                                  category: category,
+                                  icon: categoryIcons[category['name']] ??
+                                      Icons
+                                          .category, // Default icon if not found
+                                );
+                              },
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: categories.length,
+                              itemBuilder: (context, index) {
+                                var category = categories[index];
+                                return CategoryItem(
+                                  category: category,
+                                  icon: categoryIcons[category['name']] ??
+                                      Icons
+                                          .category, // Default icon if not found
+                                );
+                              },
+                            )
                       : CircularProgressIndicator(),
                   SizedBox(height: 20),
                   Text(
@@ -276,15 +319,32 @@ class _HomeState extends State<Home> {
                   ),
                   SizedBox(height: 10),
                   events.isNotEmpty
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: events.length,
-                          itemBuilder: (context, index) {
-                            var event = events[index];
-                            return EventItem(event: event);
-                          },
-                        )
+                      ? isGridView
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 0.75,
+                              ),
+                              itemCount: events.length,
+                              itemBuilder: (context, index) {
+                                var event = events[index];
+                                return EventItem(event: event);
+                              },
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: events.length,
+                              itemBuilder: (context, index) {
+                                var event = events[index];
+                                return EventItem(event: event);
+                              },
+                            )
                       : CircularProgressIndicator(),
                 ],
               ),

@@ -1,6 +1,6 @@
-import 'package:chatapp/componenets/my_button.dart';
-import 'package:chatapp/componenets/my_text.dart';
-import 'package:chatapp/services/auth/auth_service.dart';
+import 'package:allevent/componenets/my_button.dart';
+import 'package:allevent/componenets/my_text.dart';
+import 'package:allevent/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
