@@ -48,8 +48,8 @@ class _HomeState extends State<Home> {
   Future<void> apicall() async {
     try {
       http.Response response;
-      response = await http.get(
-          Uri.parse("https://allevents.s3.amazonaws.com/tests/music.json"));
+      response = await http
+          .get(Uri.parse("https://allevents.s3.amazonaws.com/tests/all.json"));
       if (response.statusCode == 200) {
         setState(() {
           stringResponse = response.body;
@@ -66,16 +66,33 @@ class _HomeState extends State<Home> {
 
   Future<void> fetchCategories() async {
     try {
-      http.Response response;
-      response = await http.get(Uri.parse(
-          "https://allevents.s3.amazonaws.com/tests/categories.json"));
-      if (response.statusCode == 200) {
-        setState(() {
-          categories = json.decode(response.body)['categories'];
-        });
-      } else {
-        print('Failed to load categories. Status code: ${response.statusCode}');
-      }
+      // Define the categories list directly
+      List<Map<String, String>> predefinedCategories = [
+        {
+          "category": "all",
+          "data": "https://allevents.s3.amazonaws.com/tests/all.json"
+        },
+        {
+          "category": "music",
+          "data": "https://allevents.s3.amazonaws.com/tests/music.json"
+        },
+        {
+          "category": "business",
+          "data": "https://allevents.s3.amazonaws.com/tests/business.json"
+        },
+        {
+          "category": "sports",
+          "data": "https://allevents.s3.amazonaws.com/tests/sports.json"
+        },
+        {
+          "category": "workshops",
+          "data": "https://allevents.s3.amazonaws.com/tests/workshops.json"
+        }
+      ];
+
+      setState(() {
+        categories = predefinedCategories;
+      });
     } catch (e) {
       print('Error during category fetch: $e');
     }
@@ -390,7 +407,7 @@ class CategoryItem extends StatelessWidget {
             Icon(icon, color: Colors.white),
             SizedBox(width: 10),
             Text(
-              category['name'],
+              category['category'],
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),

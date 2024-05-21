@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 class CategoryDetailPage extends StatelessWidget {
   final String url;
@@ -11,12 +12,9 @@ class CategoryDetailPage extends StatelessWidget {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
-      if (jsonData is List) {
-        // If the JSON is a list, cast it to a list of maps
-        return List<Map<String, dynamic>>.from(jsonData);
-      } else if (jsonData is Map) {
-        // If the JSON is a map, wrap it in a list
-        return [];
+      if (jsonData is Map && jsonData.containsKey('item')) {
+        // Extract the "item" list from the JSON data
+        return List<Map<String, dynamic>>.from(jsonData['item']);
       } else {
         throw Exception('Unexpected JSON format');
       }
@@ -46,18 +44,19 @@ class CategoryDetailPage extends StatelessWidget {
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final item = data[index];
-                return Card(
-                  margin: EdgeInsets.all(10),
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: item.entries.map<Widget>((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text('${entry.key}: ${entry.value}'),
-                        );
-                      }).toList(),
+                final eventName = item['eventname'] ?? 'No Event Name';
+                final eventUrl = item['event_url'] ?? '';
+                return GestureDetector(
+                  onTap: () {
+                    if (eventUrl.isNotEmpty) {
+                      _launchURL(eventUrl);
+                    }
+                  },
+                  child: Card(
+                    margin: EdgeInsets.all(10),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(eventName),
                     ),
                   ),
                 );
@@ -67,5 +66,13 @@ class CategoryDetailPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
