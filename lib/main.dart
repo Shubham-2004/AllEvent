@@ -1,5 +1,5 @@
 import 'package:allevent/firebase_options.dart';
-import 'package:allevent/pages/home.dart';
+
 import 'package:allevent/services/auth/auth_gate.dart';
 import 'package:allevent/services/auth/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';

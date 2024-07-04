@@ -1,9 +1,5 @@
-import 'package:allevent/services/auth/auth_gate.dart';
-import 'package:allevent/services/auth/auth_service.dart';
+import 'package:allevent/presentation/search/provider/register_form.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:allevent/componenets/my_button.dart';
-import 'package:allevent/componenets/my_text.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
@@ -14,43 +10,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmpasswordController = TextEditingController();
-
-  void signup() async {
-    if (passwordController.text != confirmpasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match")));
-      return;
-    }
-
-    final authService = Provider.of<AuthService>(context, listen: false);
-
-    try {
-      await authService.registerWithEmailAndPassword(
-          emailController.text, passwordController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registration successful! Please login.")),
-      );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => Authgate()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    confirmpasswordController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,30 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obsecureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obsecureText: true,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: confirmpasswordController,
-                  hintText: 'Confirm Password',
-                  obsecureText: true,
-                ),
-                const SizedBox(height: 25),
-                MyButton(
-                  onTap: signup,
-                  text: "Sign Up",
-                  backgroundColor: Colors.blueAccent,
-                  textColor: Colors.white,
-                ),
+                RegisterForm(), // Including the registration form here
                 const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

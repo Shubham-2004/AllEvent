@@ -1,5 +1,5 @@
-import 'package:allevent/pages/login_page.dart';
-import 'package:allevent/pages/register_page.dart';
+import 'package:allevent/presentation/search/Screen/login_screen.dart';
+import 'package:allevent/presentation/search/Screen/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginorRegister extends StatefulWidget {

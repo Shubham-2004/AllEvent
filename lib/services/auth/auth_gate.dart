@@ -1,5 +1,5 @@
 import 'package:allevent/pages/home.dart';
-import 'package:allevent/services/auth/loginorregister.dart';
+import 'package:allevent/presentation/search/Screen/loginorregister.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
